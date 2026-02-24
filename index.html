@@ -2,36 +2,102 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Chat App</title>
+<title>Messenger Style Chat</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{margin:0;font-family:Arial;background:#0f172a;color:white}
-.hidden{display:none}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f0f2f5;
+}
 
 /* AUTH */
-.auth{display:flex;justify-content:center;align-items:center;height:100vh}
-.auth-box{background:#1e293b;padding:30px;border-radius:10px;width:300px}
-.auth-box input{width:100%;padding:10px;margin:10px 0}
-.auth-box button{width:100%;padding:10px;margin-top:5px;background:#22c55e;border:none;cursor:pointer}
+.auth{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.auth-box{
+  background:white;
+  padding:30px;
+  border-radius:10px;
+  width:300px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+.auth-box h2{color:#1877f2}
+.auth-box input{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+}
+.auth-box button{
+  width:100%;
+  padding:10px;
+  margin-top:5px;
+  border:none;
+  cursor:pointer;
+  background:#1877f2;
+  color:white;
+  font-weight:bold;
+}
 
-/* APP */
-.app{display:flex;height:100vh}
-.sidebar{width:30%;background:#1e293b;padding:10px;display:flex;flex-direction:column}
-.sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.user{padding:10px;border-bottom:1px solid #334155;cursor:pointer}
-.user:hover{background:#334155}
-
-.chat-area{width:70%;display:flex;flex-direction:column;background:#0b141a}
-.chat-header{padding:15px;background:#1e293b}
-.messages{flex:1;padding:20px;overflow:auto}
-.message{max-width:60%;padding:8px 12px;margin:5px 0;border-radius:8px}
-.me{background:#22c55e;color:black;margin-left:auto}
-.other{background:#334155}
-
-.input-area{display:flex;padding:10px;background:#1e293b}
-.input-area input{flex:1;padding:10px;border:none;border-radius:20px}
-.input-area button{margin-left:10px;padding:10px 15px;border:none;border-radius:20px;background:#22c55e;cursor:pointer}
+/* CHAT */
+.chat-app{
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+}
+.header{
+  background:#1877f2;
+  color:white;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+}
+.messages{
+  flex:1;
+  padding:15px;
+  overflow:auto;
+}
+.message{
+  margin-bottom:10px;
+  max-width:70%;
+  padding:8px 12px;
+  border-radius:18px;
+  font-size:14px;
+}
+.me{
+  background:#1877f2;
+  color:white;
+  margin-left:auto;
+}
+.other{
+  background:#e4e6eb;
+  color:black;
+}
+.input-area{
+  display:flex;
+  padding:10px;
+  background:white;
+}
+.input-area input{
+  flex:1;
+  padding:10px;
+  border-radius:20px;
+  border:1px solid #ccc;
+}
+.input-area button{
+  margin-left:10px;
+  padding:10px 15px;
+  border:none;
+  border-radius:20px;
+  background:#1877f2;
+  color:white;
+  cursor:pointer;
+}
+.hidden{display:none}
 </style>
 </head>
 <body>
@@ -39,7 +105,7 @@ body{margin:0;font-family:Arial;background:#0f172a;color:white}
 <!-- AUTH -->
 <div id="authSection" class="auth">
   <div class="auth-box">
-    <h3>Login / Signup</h3>
+    <h2>Messenger</h2>
     <input id="email" type="email" placeholder="Email">
     <input id="password" type="password" placeholder="Password">
     <button onclick="signup()">Signup</button>
@@ -47,29 +113,20 @@ body{margin:0;font-family:Arial;background:#0f172a;color:white}
   </div>
 </div>
 
-<!-- APP -->
-<div id="appSection" class="app hidden">
-
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <span>Users</span>
-      <button onclick="logout()">Logout</button>
-    </div>
-    <div id="userList"></div>
+<!-- CHAT -->
+<div id="chatSection" class="chat-app hidden">
+  <div class="header">
+    <span>Messenger Chat</span>
+    <button onclick="logout()" style="background:white;color:#1877f2;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">Logout</button>
   </div>
-
-  <div class="chat-area">
-    <div id="chatHeader" class="chat-header">Select user</div>
-    <div id="messages" class="messages"></div>
-    <div class="input-area">
-      <input id="messageInput" placeholder="Type message">
-      <button onclick="sendMessage()">Send</button>
-    </div>
+  <div id="messages" class="messages"></div>
+  <div class="input-area">
+    <input id="msgInput" placeholder="Type a message">
+    <button onclick="sendMessage()">Send</button>
   </div>
-
 </div>
 
-<!-- Firebase CDN (COMPAT VERSION) -->
+<!-- Firebase CDN -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -89,30 +146,24 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-let currentUser = null;
-let selectedUser = null;
+let currentUser=null;
 
 /* AUTH STATE */
 auth.onAuthStateChanged(user=>{
   if(user){
-    currentUser = user;
-    document.getElementById("authSection").classList.add("hidden");
-    document.getElementById("appSection").classList.remove("hidden");
-    loadUsers();
+    currentUser=user;
+    authSection.classList.add("hidden");
+    chatSection.classList.remove("hidden");
+    loadMessages();
   } else {
-    document.getElementById("authSection").classList.remove("hidden");
-    document.getElementById("appSection").classList.add("hidden");
+    authSection.classList.remove("hidden");
+    chatSection.classList.add("hidden");
   }
 });
 
 /* SIGNUP */
 function signup(){
   auth.createUserWithEmailAndPassword(email.value,password.value)
-  .then(cred=>{
-    return db.collection("users").doc(cred.user.uid).set({
-      email:cred.user.email
-    });
-  })
   .catch(e=>alert(e.message));
 }
 
@@ -127,55 +178,30 @@ function logout(){
   auth.signOut();
 }
 
-/* LOAD USERS */
-function loadUsers(){
-  db.collection("users").onSnapshot(snapshot=>{
-    userList.innerHTML="";
-    snapshot.forEach(doc=>{
-      if(doc.id!==currentUser.uid){
-        userList.innerHTML+=`
-          <div class="user" onclick="openChat('${doc.id}','${doc.data().email}')">
-            ${doc.data().email}
-          </div>
-        `;
-      }
-    });
+/* SEND MESSAGE */
+function sendMessage(){
+  if(!msgInput.value) return;
+  db.collection("globalMessages").add({
+    text:msgInput.value,
+    uid:currentUser.uid,
+    time:new Date()
   });
+  msgInput.value="";
 }
 
-function openChat(uid,email){
-  selectedUser=uid;
-  chatHeader.innerText=email;
-  loadMessages();
-}
-
-function getChatId(uid1,uid2){
-  return uid1<uid2 ? uid1+"_"+uid2 : uid2+"_"+uid1;
-}
-
+/* LOAD MESSAGES */
 function loadMessages(){
-  const chatId=getChatId(currentUser.uid,selectedUser);
-  db.collection("chats").doc(chatId).collection("messages")
+  db.collection("globalMessages")
   .orderBy("time")
   .onSnapshot(snapshot=>{
     messages.innerHTML="";
     snapshot.forEach(doc=>{
       let data=doc.data();
-      let cls=data.sender===currentUser.uid?"me":"other";
+      let cls=data.uid===currentUser.uid?"me":"other";
       messages.innerHTML+=`<div class="message ${cls}">${data.text}</div>`;
     });
+    messages.scrollTop=messages.scrollHeight;
   });
-}
-
-function sendMessage(){
-  if(!messageInput.value || !selectedUser) return;
-  const chatId=getChatId(currentUser.uid,selectedUser);
-  db.collection("chats").doc(chatId).collection("messages").add({
-    sender:currentUser.uid,
-    text:messageInput.value,
-    time:new Date()
-  });
-  messageInput.value="";
 }
 </script>
 
