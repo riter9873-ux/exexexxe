@@ -1,21 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Home</title>
-  <style>
-    body {
-      background: black;
-      color: lime;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      font-size: 30px;
-      font-family: Arial;
-    }
-  </style>
+<title>Home</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  background:black;
+  color:lime;
+  font-size:30px;
+  font-family:monospace;
+}
+button{
+  margin-top:20px;
+  padding:10px 20px;
+  border:none;
+  background:lime;
+  color:black;
+  cursor:pointer;
+}
+</style>
 </head>
 <body>
-  Welcome To Reality
+
+<div>Welcome To Reality</div>
+<button onclick="logout()">Logout</button>
+
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  appId: "YOUR_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// 🔒 Protect Page
+auth.onAuthStateChanged(user=>{
+  if(!user){
+    window.location.href="index.html";
+  }
+});
+
+function logout(){
+  auth.signOut().then(()=>{
+    window.location.href="index.html";
+  });
+}
+</script>
+
 </body>
 </html>
