@@ -20,7 +20,7 @@
     .box{
       background:#1f1f1f;
       padding:40px;
-      width:300px;
+      width:320px;
       border-radius:10px;
       text-align:center;
       color:white;
@@ -41,9 +41,6 @@
       background:#00c3ff;
       cursor:pointer;
       font-weight:bold;
-    }
-    button:hover{
-      opacity:0.85;
     }
   </style>
 </head>
@@ -69,33 +66,21 @@
   const auth = firebase.auth();
 
   function signup(){
-    const email = emailInput();
-    const pass = passInput();
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("password").value;
 
     auth.createUserWithEmailAndPassword(email, pass)
-    .then(()=>{
-      alert("Account Created! Now Login.");
-    })
+    .then(()=>alert("Account Created!"))
     .catch(e=>alert(e.message));
   }
 
   function login(){
-    const email = emailInput();
-    const pass = passInput();
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("password").value;
 
     auth.signInWithEmailAndPassword(email, pass)
-    .then(()=>{
-      window.location.href = "home.html";
-    })
+    .then(()=>window.location.href="home.html")
     .catch(e=>alert(e.message));
-  }
-
-  function emailInput(){
-    return document.getElementById("email").value;
-  }
-
-  function passInput(){
-    return document.getElementById("password").value;
   }
 </script>
 
