@@ -1,79 +1,94 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login Page</title>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
-  <style>
-    body {
-      font-family: Arial;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #111;
-      color: white;
-    }
-    .box {
-      text-align: center;
-    }
-    input {
-      display: block;
-      margin: 10px auto;
-      padding: 10px;
-      width: 200px;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      cursor: pointer;
-    }
-  </style>
+<title>Multi Design Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+body{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  transition:0.5s;
+}
+
+/* ===== Common Box ===== */
+.box{
+  width:320px;
+  padding:40px;
+  text-align:center;
+  border-radius:15px;
+  transition:0.5s;
+}
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border:none;
+  border-radius:8px;
+}
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:25px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.switcher{
+  position:fixed;
+  top:20px;
+}
+
+/* ===== Design 1 Neon ===== */
+.neon body{background:#0f0f0f;}
+.neon .box{background:#111;box-shadow:0 0 25px #00f2ff;color:#00f2ff;}
+.neon input{background:#1a1a1a;color:#fff;border:1px solid #00f2ff;}
+.neon button{background:#00f2ff;color:#000;}
+
+/* ===== Design 2 Corporate ===== */
+.corporate body{background:#f4f6f9;}
+.corporate .box{background:#fff;color:#333;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+.corporate button{background:#007bff;color:#fff;}
+
+/* ===== Design 3 Hacker ===== */
+.hacker body{background:black;}
+.hacker .box{border:1px solid #00ff00;color:#00ff00;}
+.hacker input{background:black;border:1px solid #00ff00;color:#00ff00;}
+.hacker button{background:#00ff00;color:black;}
+
+/* ===== Design 4 Modern ===== */
+.modern body{background:linear-gradient(135deg,#667eea,#764ba2);}
+.modern .box{background:white;color:#333;border-radius:20px;}
+.modern button{background:#667eea;color:#fff;}
+
+</style>
 </head>
-<body>
+<body class="neon">
+
+<div class="switcher">
+<select onchange="changeTheme(this.value)">
+  <option value="neon">Neon</option>
+  <option value="corporate">Corporate</option>
+  <option value="hacker">Hacker</option>
+  <option value="modern">Modern</option>
+</select>
+</div>
 
 <div class="box">
-  <h2>Login</h2>
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <button onclick="signup()">Sign Up</button>
+<h2>Login</h2>
+<input type="email" placeholder="Email">
+<input type="password" placeholder="Password">
+<button>Login</button>
+<button>Sign Up</button>
 </div>
 
 <script>
-  // 🔥 তোমার Firebase Config এখানে বসাও
-  const firebaseConfig = {
-    apiKey: "AIzaSyBkDJvYxri-fSlPVKjZrHfgoubSxRuoBOQ",
-    authDomain: "testmode-df610.firebaseapp.com",
-    projectId: "testmode-df610",
-    appId: "1:753030117752:web:8c1bfe3a57a779a441308d"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-
-  function signup() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    auth.createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        alert("Sign Up Successful!");
-        window.location.href = "index.html";
-      })
-      .catch(error => alert(error.message));
-  }
-
-  function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    auth.signInWithEmailAndPassword(email, password)
-      .then(() => {
-        window.location.href = "home.html";
-      })
-      .catch(error => alert(error.message));
-  }
+function changeTheme(theme){
+  document.body.className = theme;
+}
 </script>
 
 </body>
