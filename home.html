@@ -1,36 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Home</title>
+<title>Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
 <style>
 body{
   margin:0;
   height:100vh;
   display:flex;
-  flex-direction:column;
   justify-content:center;
   align-items:center;
-  background:black;
-  color:lime;
-  font-size:30px;
-  font-family:monospace;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  font-family:sans-serif;
+}
+.box{
+  background:white;
+  padding:40px;
+  width:320px;
+  border-radius:20px;
+  text-align:center;
+}
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border:1px solid #ddd;
+  border-radius:10px;
 }
 button{
-  margin-top:20px;
-  padding:10px 20px;
+  width:100%;
+  padding:12px;
+  margin-top:10px;
   border:none;
-  background:lime;
-  color:black;
+  background:#667eea;
+  color:#fff;
+  border-radius:25px;
   cursor:pointer;
 }
 </style>
 </head>
 <body>
 
-<div>Welcome To Reality</div>
-<button onclick="logout()">Logout</button>
+<div class="box">
+<h2>Login</h2>
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<button onclick="signup()">Sign Up</button>
+</div>
 
 <script>
 const firebaseConfig = {
@@ -40,20 +61,36 @@ const firebaseConfig = {
   appId: "1:753030117752:web:8c1bfe3a57a779a441308d"
 };
 
-firebase.initializeApp(firebaseConfig);
+// ✅ Prevent double initialize
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
 const auth = firebase.auth();
 
-// 🔒 Protect Page
-auth.onAuthStateChanged(user=>{
-  if(!user){
-    window.location.href="index.html";
+// Only redirect if user exists AND not already on home
+auth.onAuthStateChanged(function(user) {
+  if (user && window.location.pathname.includes("index.html")) {
+    window.location.href = "home.html";
   }
 });
 
-function logout(){
-  auth.signOut().then(()=>{
-    window.location.href="index.html";
-  });
+function signup(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  auth.createUserWithEmailAndPassword(email,password)
+  .then(()=>alert("Account Created!"))
+  .catch(error=>alert(error.message));
+}
+
+function login(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  auth.signInWithEmailAndPassword(email,password)
+  .then(()=>window.location.href="home.html")
+  .catch(error=>alert(error.message));
 }
 </script>
 
