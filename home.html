@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dashboard</title>
+  <title>Cyber Lab Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -9,10 +9,8 @@
 
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
-
     body{display:flex;height:100vh;background:#f9fafb;}
 
-    /* Sidebar */
     .sidebar{
       width:230px;
       background:#111827;
@@ -37,18 +35,15 @@
     }
     .sidebar button:hover{background:#2563eb;}
 
-    /* Main */
-    .main{flex:1;padding:40px;}
+    .main{flex:1;padding:40px;overflow:auto;}
+
     .topbar{
       display:flex;
       justify-content:space-between;
       align-items:center;
       margin-bottom:30px;
     }
-    .user{
-      font-size:14px;
-      color:#374151;
-    }
+
     .logout{
       background:#ef4444;
       border:none;
@@ -71,18 +66,17 @@
       box-shadow:0 5px 25px rgba(0,0,0,0.05);
       transition:0.2s;
     }
-    .card:hover{
-      transform:translateY(-5px);
-    }
+    .card:hover{transform:translateY(-5px);}
 
-    .card h3{margin-bottom:10px;color:#111827;}
-    .card p{font-size:14px;color:#6b7280;margin-bottom:15px;}
+    .card h3{margin-bottom:10px;}
+    .card p{font-size:14px;color:#6b7280;margin-bottom:10px;}
 
-    .result{
-      font-weight:600;
+    input{
+      width:100%;
+      padding:8px;
       margin-bottom:10px;
-      color:#2563eb;
-      word-break:break-all;
+      border:1px solid #d1d5db;
+      border-radius:6px;
     }
 
     .btn{
@@ -93,7 +87,13 @@
       color:white;
       cursor:pointer;
       font-size:13px;
-      margin-right:5px;
+    }
+
+    .result{
+      margin-top:10px;
+      font-size:14px;
+      color:#2563eb;
+      word-break:break-all;
     }
 
   </style>
@@ -102,37 +102,39 @@
 
 <div class="sidebar">
   <div>
-    <h2>Reality Tools</h2>
-    <button onclick="loadIP()">IP Checker</button>
-    <button onclick="generateEmail()">Temp Mail</button>
+    <h2>Cyber Lab</h2>
   </div>
 </div>
 
 <div class="main">
+
   <div class="topbar">
-    <div class="user" id="userEmail">Loading...</div>
+    <div id="userEmail">Loading...</div>
     <button class="logout" onclick="logout()">Logout</button>
   </div>
 
   <div class="grid">
 
+    <!-- BIN Lookup -->
     <div class="card">
-      <h3>🌐 IP Address</h3>
-      <p>Shows your public network identity.</p>
-      <div class="result" id="ipResult">Not Loaded</div>
-      <button class="btn" onclick="loadIP()">Refresh</button>
-      <button class="btn" onclick="copyIP()">Copy</button>
+      <h3>💳 BIN Lookup</h3>
+      <p>Enter first 6 digits of a card (educational purpose).</p>
+      <input type="text" id="binInput" placeholder="Enter 6 digit BIN">
+      <button class="btn" onclick="lookupBIN()">Lookup</button>
+      <div class="result" id="binResult"></div>
     </div>
 
+    <!-- Payment Security Info -->
     <div class="card">
-      <h3>📧 Temporary Email</h3>
-      <p>Disposable email for testing purpose.</p>
-      <div class="result" id="mailResult">Not Generated</div>
-      <button class="btn" onclick="generateEmail()">Generate</button>
-      <button class="btn" onclick="copyMail()">Copy</button>
+      <h3>🛡 Payment Security Concepts</h3>
+      <p><b>PCI DSS:</b> Security standard for card payments.</p>
+      <p><b>3D Secure:</b> Extra authentication layer.</p>
+      <p><b>CVV:</b> Card verification value for fraud protection.</p>
+      <p><b>Tokenization:</b> Replaces card data with secure tokens.</p>
     </div>
 
   </div>
+
 </div>
 
 <script>
@@ -158,23 +160,27 @@ function logout(){
   auth.signOut().then(()=>window.location="index.html");
 }
 
-async function loadIP(){
-  let res=await fetch("https://api.ipify.org?format=json");
-  let data=await res.json();
-  document.getElementById("ipResult").innerText=data.ip;
-}
+async function lookupBIN(){
+  let bin = document.getElementById("binInput").value;
 
-function copyIP(){
-  navigator.clipboard.writeText(ipResult.innerText);
-}
+  if(bin.length < 6){
+    alert("Enter valid 6 digit BIN");
+    return;
+  }
 
-function generateEmail(){
-  let r=Math.floor(Math.random()*100000);
-  mailResult.innerText="user"+r+"@1secmail.com";
-}
+  try{
+    let res = await fetch("https://lookup.binlist.net/"+bin);
+    let data = await res.json();
 
-function copyMail(){
-  navigator.clipboard.writeText(mailResult.innerText);
+    document.getElementById("binResult").innerHTML = `
+      Brand: ${data.scheme || "N/A"} <br>
+      Type: ${data.type || "N/A"} <br>
+      Bank: ${data.bank?.name || "N/A"} <br>
+      Country: ${data.country?.name || "N/A"}
+    `;
+  }catch{
+    document.getElementById("binResult").innerText="Invalid or not found.";
+  }
 }
 </script>
 
