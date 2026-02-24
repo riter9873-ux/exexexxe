@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Cyber Social Platform</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+}
+.hidden{display:none}
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+.card{
+  background:#1e293b;
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:20px;
+}
+input{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border:none;
+  border-radius:6px;
+}
+button{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border:none;
+  border-radius:6px;
+  background:#2563eb;
+  color:white;
+  cursor:pointer;
+}
+.user{
+  padding:10px;
+  background:#334155;
+  margin:6px 0;
+  border-radius:6px;
+  cursor:pointer;
+}
+#messages{
+  height:250px;
+  overflow:auto;
+  background:#0f172a;
+  padding:10px;
+  border-radius:6px;
+  margin-bottom:10px;
+}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- AUTH -->
+<div id="authSection" class="card">
+<h2>Login / Signup</h2>
+<input id="email" type="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="signup()">Signup</button>
+<button onclick="login()">Login</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboardSection" class="hidden">
+
+<div class="topbar">
+<div id="welcomeText"></div>
+<button onclick="logout()">Logout</button>
+</div>
+
+<div class="card">
+<h3>All Users</h3>
+<div id="usersList"></div>
+</div>
+
+<div class="card hidden" id="chatSection">
+<h3>Private Chat</h3>
+<div id="messages"></div>
+<input id="msgInput" placeholder="Type message">
+<button onclick="sendMessage()">Send</button>
+</div>
+
+</div>
+</div>
+
+<!-- Firebase Scripts -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB3lYDIr8ElAWk-jwnOWxubtVS-TeSSyOg",
+  authDomain: "uyguy-ab047.firebaseapp.com",
+  projectId: "uyguy-ab047",
+  appId: "1:297739792713:web:72af3ba75fabcacb3caa98"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let currentUser = null;
+let selectedUser = null;
+
+auth.onAuthStateChanged(user=>{
+  if(user){
+    currentUser = user;
+    authSection.classList.add("hidden");
+    dashboardSection.classList.remove("hidden");
+    welcomeText.innerText = "Logged in as: " + user.email;
+    loadUsers();
+  } else {
+    authSection.classList.remove("hidden");
+    dashboardSection.classList.add("hidden");
+  }
+});
+
+// Signup
+function signup(){
+  auth.createUserWithEmailAndPassword(email.value,password.value)
+  .then(userCred=>{
+    db.collection("users").doc(userCred.user.uid).set({
+      email:userCred.user.email,
+      createdAt:new Date()
+    });
+  })
+  .catch(e=>alert(e.message));
+}
+
+// Login
+function login(){
+  auth.signInWithEmailAndPassword(email.value,password.value)
+  .catch(e=>alert(e.message));
+}
+
+// Logout
+function logout(){
+  auth.signOut();
+}
+
+// Load Users
+function loadUsers(){
+  db.collection("users").onSnapshot(snapshot=>{
+    usersList.innerHTML="";
+    snapshot.forEach(doc=>{
+      if(doc.id !== currentUser.uid){
+        usersList.innerHTML+=`
+          <div class="user" onclick="openChat('${doc.id}','${doc.data().email}')">
+            ${doc.data().email}
+          </div>
+        `;
+      }
+    });
+  });
+}
+
+// Open Chat
+function openChat(uid){
+  selectedUser = uid;
+  chatSection.classList.remove("hidden");
+  loadMessages();
+}
+
+// Load Messages
+function loadMessages(){
+  db.collection("messages")
+  .orderBy("timestamp")
+  .onSnapshot(snapshot=>{
+    messages.innerHTML="";
+    snapshot.forEach(doc=>{
+      let data = doc.data();
+      if(
+        (data.sender===currentUser.uid && data.receiver===selectedUser) ||
+        (data.sender===selectedUser && data.receiver===currentUser.uid)
+      ){
+        messages.innerHTML+=`<div>${data.text}</div>`;
+      }
+    });
+    messages.scrollTop = messages.scrollHeight;
+  });
+}
+
+// Send Message
+function sendMessage(){
+  if(!msgInput.value) return;
+  db.collection("messages").add({
+    sender:currentUser.uid,
+    receiver:selectedUser,
+    text:msgInput.value,
+    timestamp:new Date()
+  });
+  msgInput.value="";
+}
+
+</script>
+</body>
+</html>
