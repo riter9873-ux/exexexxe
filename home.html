@@ -1,38 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Home</title>
+<title>Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
 <style>
-body{
+*{
   margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:sans-serif;
+}
+
+body{
+  display:flex;
   height:100vh;
+  background:#0f2027;
+  color:white;
+}
+
+/* Sidebar */
+.sidebar{
+  width:220px;
+  background:#111;
+  padding:20px;
   display:flex;
   flex-direction:column;
+}
+
+.sidebar h2{
+  margin-bottom:30px;
+  text-align:center;
+  color:#00f2ff;
+}
+
+.menu-btn{
+  padding:12px;
+  margin-bottom:15px;
+  border:none;
+  border-radius:8px;
+  background:#1e1e1e;
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+  font-weight:bold;
+}
+
+.menu-btn:hover{
+  background:#00f2ff;
+  color:black;
+}
+
+/* Main Content */
+.content{
+  flex:1;
+  display:flex;
   justify-content:center;
   align-items:center;
-  background:black;
-  color:lime;
-  font-size:30px;
-  font-family:monospace;
+  flex-direction:column;
 }
-button{
+
+.card{
+  background:rgba(255,255,255,0.05);
+  padding:40px;
+  border-radius:15px;
+  backdrop-filter:blur(10px);
+  text-align:center;
+}
+
+.logout{
   margin-top:20px;
   padding:10px 20px;
   border:none;
-  background:lime;
-  color:black;
+  border-radius:20px;
+  background:#ff4b2b;
+  color:white;
   cursor:pointer;
 }
 </style>
 </head>
 <body>
 
-<div>Welcome To Reality</div>
-<button onclick="logout()">Logout</button>
+<div class="sidebar">
+  <h2>TOOLS</h2>
+  <button class="menu-btn" onclick="showTool('ip')">IP Check</button>
+  <button class="menu-btn" onclick="showTool('card')">Card Tool</button>
+  <button class="menu-btn" onclick="showTool('mail')">Create Temp Mail</button>
+</div>
+
+<div class="content">
+  <div class="card" id="mainContent">
+    <h1>Welcome To Reality 🚀</h1>
+    <p id="userEmail"></p>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+</div>
 
 <script>
 const firebaseConfig = {
@@ -42,20 +107,40 @@ const firebaseConfig = {
   appId: "1:753030117752:web:8c1bfe3a57a779a441308d"
 };
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
 const auth = firebase.auth();
 
-// 🔒 Protect Page
 auth.onAuthStateChanged(function(user){
-  if(!user){
-    window.location.replace("index.html");
+  if(user){
+    document.getElementById("userEmail").innerText = "Logged in as: " + user.email;
+  } else {
+    window.location.href="index.html";
   }
 });
 
 function logout(){
-  auth.signOut().then(function(){
-    window.location.replace("index.html");
+  auth.signOut().then(()=>{
+    window.location.href="index.html";
   });
+}
+
+function showTool(tool){
+  const content = document.getElementById("mainContent");
+
+  if(tool === "ip"){
+    content.innerHTML = "<h1>IP Check Tool</h1><p>Here you can build your IP checking feature.</p>";
+  }
+
+  else if(tool === "card"){
+    content.innerHTML = "<h1>Card Tool</h1><p>Tool section placeholder.</p>";
+  }
+
+  else if(tool === "mail"){
+    content.innerHTML = "<h1>Temp Mail Tool</h1><p>Temporary email feature section.</p>";
+  }
 }
 </script>
 
