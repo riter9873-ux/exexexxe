@@ -4,10 +4,10 @@
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyBkDJvYxri-fSlPVKjZrHfgoubSxRuoBOQ",
-  authDomain: "testmode-df610.firebaseapp.com",
-  projectId: "testmode-df610",
-  appId: "1:753030117752:web:8c1bfe3a57a779a441308d"
+  apiKey: "AIzaSyB3lYDIr8ElAWk-jwnOWxubtVS-TeSSyOg",
+  authDomain: "uyguy-ab047.firebaseapp.com",
+  projectId: "uyguy-ab047",
+  appId: "1:297739792713:web:72af3ba75fabcacb3caa98"
 };
 
 firebase.initializeApp(firebaseConfig);
