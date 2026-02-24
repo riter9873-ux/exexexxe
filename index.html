@@ -55,33 +55,33 @@
 </div>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBkDJvYxri-fSlPVKjZrHfgoubSxRuoBOQ",
-    authDomain: "testmode-df610.firebaseapp.com",
-    projectId: "testmode-df610",
-    appId: "1:753030117752:web:8c1bfe3a57a779a441308d"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyBkDJvYxri-fSlPVKjZrHfgoubSxRuoBOQ",
+  authDomain: "testmode-df610.firebaseapp.com",
+  projectId: "testmode-df610",
+  appId: "1:753030117752:web:8c1bfe3a57a779a441308d"
+};
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-  function signup(){
-    const email = document.getElementById("email").value;
-    const pass = document.getElementById("password").value;
+function signup(){
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
 
-    auth.createUserWithEmailAndPassword(email, pass)
-    .then(()=>alert("Account Created!"))
-    .catch(e=>alert(e.message));
-  }
+  auth.createUserWithEmailAndPassword(email, pass)
+  .then(()=>alert("Account Created!"))
+  .catch(e=>alert(e.message));
+}
 
-  function login(){
-    const email = document.getElementById("email").value;
-    const pass = document.getElementById("password").value;
+function login(){
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
 
-    auth.signInWithEmailAndPassword(email, pass)
-    .then(()=>window.location.href="home.html")
-    .catch(e=>alert(e.message));
-  }
+  auth.signInWithEmailAndPassword(email, pass)
+  .then(()=>window.location.href="home.html")
+  .catch(e=>alert(e.message));
+}
 </script>
 
 </body>
