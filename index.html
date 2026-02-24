@@ -10,7 +10,38 @@ body{
   margin:0;
   font-family:Arial, sans-serif;
   background:#0f172a;
+  color:white;
 }
+.hidden{display:none}
+
+/* AUTH */
+.auth{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.auth-box{
+  background:#1e293b;
+  padding:30px;
+  border-radius:10px;
+  width:300px;
+}
+.auth-box input{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+}
+.auth-box button{
+  width:100%;
+  padding:10px;
+  margin-top:5px;
+  background:#22c55e;
+  border:none;
+  cursor:pointer;
+}
+
+/* APP */
 .app{
   display:flex;
   height:100vh;
@@ -18,18 +49,14 @@ body{
 .sidebar{
   width:30%;
   background:#1e293b;
-  color:white;
   display:flex;
   flex-direction:column;
 }
 .sidebar-header{
   padding:15px;
-  font-weight:bold;
   background:#111827;
-}
-.user-list{
-  flex:1;
-  overflow:auto;
+  display:flex;
+  justify-content:space-between;
 }
 .user{
   padding:15px;
@@ -48,7 +75,6 @@ body{
 .chat-header{
   padding:15px;
   background:#1e293b;
-  color:white;
 }
 .messages{
   flex:1;
@@ -68,7 +94,6 @@ body{
 }
 .other{
   background:#334155;
-  color:white;
 }
 .input-area{
   display:flex;
@@ -89,40 +114,14 @@ body{
   background:#22c55e;
   cursor:pointer;
 }
-.hidden{display:none}
-.auth{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  background:#0f172a;
-}
-.auth-box{
-  background:#1e293b;
-  padding:30px;
-  border-radius:10px;
-  width:300px;
-}
-.auth-box input{
-  width:100%;
-  padding:10px;
-  margin:10px 0;
-}
-.auth-box button{
-  width:100%;
-  padding:10px;
-  background:#22c55e;
-  border:none;
-  cursor:pointer;
-}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- AUTH SECTION -->
 <div id="authSection" class="auth">
   <div class="auth-box">
-    <h3 style="color:white;">Login / Signup</h3>
+    <h3>Login / Signup</h3>
     <input id="email" type="email" placeholder="Email">
     <input id="password" type="password" placeholder="Password">
     <button onclick="signup()">Signup</button>
@@ -130,19 +129,22 @@ body{
   </div>
 </div>
 
-<!-- APP -->
+<!-- APP SECTION -->
 <div id="appSection" class="app hidden">
 
   <div class="sidebar">
-    <div class="sidebar-header">Chats</div>
-    <div class="user-list" id="userList"></div>
+    <div class="sidebar-header">
+      <span>Chats</span>
+      <button onclick="logout()">Logout</button>
+    </div>
+    <div id="userList"></div>
   </div>
 
   <div class="chat-area">
     <div class="chat-header" id="chatHeader">Select user</div>
     <div class="messages" id="messages"></div>
     <div class="input-area">
-      <input id="messageInput" placeholder="Type a message">
+      <input id="messageInput" placeholder="Type message">
       <button onclick="sendMessage()">Send</button>
     </div>
   </div>
@@ -169,29 +171,53 @@ const db = firebase.firestore();
 let currentUser=null;
 let selectedUser=null;
 
+/* AUTH STATE */
 auth.onAuthStateChanged(user=>{
   if(user){
     currentUser=user;
-    authSection.classList.add("hidden");
-    appSection.classList.remove("hidden");
+    document.getElementById("authSection").classList.add("hidden");
+    document.getElementById("appSection").classList.remove("hidden");
     loadUsers();
+  } else {
+    document.getElementById("authSection").classList.remove("hidden");
+    document.getElementById("appSection").classList.add("hidden");
   }
 });
 
+/* SIGNUP */
 function signup(){
-  auth.createUserWithEmailAndPassword(email.value,password.value)
+  const emailVal=email.value.trim();
+  const passVal=password.value.trim();
+  if(!emailVal || !passVal){
+    alert("Enter email & password");
+    return;
+  }
+
+  auth.createUserWithEmailAndPassword(emailVal,passVal)
   .then(cred=>{
-    db.collection("users").doc(cred.user.uid).set({
+    return db.collection("users").doc(cred.user.uid).set({
       email:cred.user.email
     });
-  }).catch(e=>alert(e.message));
-}
-
-function login(){
-  auth.signInWithEmailAndPassword(email.value,password.value)
+  })
+  .then(()=>alert("Signup successful"))
   .catch(e=>alert(e.message));
 }
 
+/* LOGIN */
+function login(){
+  const emailVal=email.value.trim();
+  const passVal=password.value.trim();
+  auth.signInWithEmailAndPassword(emailVal,passVal)
+  .then(()=>alert("Login successful"))
+  .catch(e=>alert(e.message));
+}
+
+/* LOGOUT */
+function logout(){
+  auth.signOut();
+}
+
+/* LOAD USERS */
 function loadUsers(){
   db.collection("users").onSnapshot(snapshot=>{
     userList.innerHTML="";
