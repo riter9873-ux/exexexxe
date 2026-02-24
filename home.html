@@ -9,60 +9,26 @@
 
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
-    body{
-      display:flex;
-      height:100vh;
-      background:#0f2027;
-      color:white;
-    }
-    .sidebar{
-      width:220px;
-      background:#111;
-      padding:20px;
-    }
-    .sidebar h2{
-      text-align:center;
-      margin-bottom:20px;
-      color:#00f2ff;
-    }
+    body{display:flex;height:100vh;background:#0f2027;color:white;}
+    .sidebar{width:220px;background:#111;padding:20px;}
+    .sidebar h2{text-align:center;margin-bottom:20px;color:#00f2ff;}
     .sidebar button{
-      width:100%;
-      padding:10px;
-      margin-bottom:15px;
-      border:none;
-      background:#1e1e1e;
-      color:white;
-      cursor:pointer;
-      border-radius:5px;
+      width:100%;padding:10px;margin-bottom:15px;border:none;
+      background:#1e1e1e;color:white;cursor:pointer;border-radius:5px;
     }
-    .sidebar button:hover{
-      background:#00f2ff;
-      color:black;
-    }
+    .sidebar button:hover{background:#00f2ff;color:black;}
     .main{
-      flex:1;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      flex-direction:column;
-      text-align:center;
-      padding:20px;
+      flex:1;display:flex;justify-content:center;
+      align-items:center;flex-direction:column;
+      text-align:center;padding:20px;
     }
     .card{
-      background:#1c1c1c;
-      padding:20px;
-      border-radius:10px;
-      margin-top:20px;
-      width:300px;
+      background:#1c1c1c;padding:20px;border-radius:10px;
+      margin-top:20px;width:320px;text-align:left;
     }
     .logout{
-      margin-top:20px;
-      padding:10px 20px;
-      border:none;
-      background:red;
-      color:white;
-      cursor:pointer;
-      border-radius:5px;
+      margin-top:20px;padding:10px 20px;border:none;
+      background:red;color:white;cursor:pointer;border-radius:5px;
     }
   </style>
 </head>
@@ -71,6 +37,7 @@
 <div class="sidebar">
   <h2>TOOLS</h2>
   <button onclick="showIP()">IP Check</button>
+  <button onclick="generateTempMail()">Temp Mail</button>
 </div>
 
 <div class="main" id="mainContent">
@@ -79,51 +46,55 @@
 </div>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBkDJvYxri-fSlPVKjZrHfgoubSxRuoBOQ",
-    authDomain: "testmode-df610.firebaseapp.com",
-    projectId: "testmode-df610",
-    appId: "1:753030117752:web:8c1bfe3a57a779a441308d"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyBkDJvYxri-fSlPVKjZrHfgoubSxRuoBOQ",
+  authDomain: "testmode-df610.firebaseapp.com",
+  projectId: "testmode-df610",
+  appId: "1:753030117752:web:8c1bfe3a57a779a441308d"
+};
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-  auth.onAuthStateChanged(user=>{
-    if(!user){
-      window.location.href="index.html";
-    }
+auth.onAuthStateChanged(user=>{
+  if(!user){
+    window.location.href="index.html";
+  }
+});
+
+function logout(){
+  auth.signOut().then(()=>{
+    window.location.href="index.html";
   });
+}
 
-  function logout(){
-    auth.signOut().then(()=>{
-      window.location.href="index.html";
-    });
-  }
+/* IP CHECK */
+function showIP(){
+  document.getElementById("mainContent").innerHTML = `
+    <h1>Your Public IP</h1>
+    <div class="card">
+      <iframe src="https://api.ipify.org" 
+      style="border:none;width:100%;height:40px;font-size:20px;">
+      </iframe>
+    </div>
+    <button class="logout" onclick="logout()">Logout</button>
+  `;
+}
 
-  function showIP(){
-    fetch("https://ipapi.co/json/")
-    .then(res=>res.json())
-    .then(data=>{
-      document.getElementById("mainContent").innerHTML = `
-        <h1>Your IP Information</h1>
-        <div class="card">
-          <p><b>IP:</b> ${data.ip}</p>
-          <p><b>City:</b> ${data.city}</p>
-          <p><b>Region:</b> ${data.region}</p>
-          <p><b>Country:</b> ${data.country_name}</p>
-          <p><b>ISP:</b> ${data.org}</p>
-        </div>
-        <button class="logout" onclick="logout()">Logout</button>
-      `;
-    })
-    .catch(()=>{
-      document.getElementById("mainContent").innerHTML = `
-        <h2>Failed to load IP info</h2>
-        <button class="logout" onclick="logout()">Logout</button>
-      `;
-    });
-  }
+/* TEMP MAIL */
+function generateTempMail(){
+  let random = Math.floor(Math.random()*100000);
+  let email = "user"+random+"@1secmail.com";
+
+  document.getElementById("mainContent").innerHTML = `
+    <h1>Temporary Email</h1>
+    <div class="card">
+      <p><b>Email:</b> ${email}</p>
+      <p>Use for testing purpose.</p>
+    </div>
+    <button class="logout" onclick="logout()">Logout</button>
+  `;
+}
 </script>
 
 </body>
