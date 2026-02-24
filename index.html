@@ -2,112 +2,163 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Cyber Social Platform</title>
+<title>Premium Chat</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
   margin:0;
-  font-family:Arial;
-  background:#0f172a;
+  font-family:Arial, sans-serif;
+  background:#111b21;
+}
+.app{
+  display:flex;
+  height:100vh;
+}
+.sidebar{
+  width:30%;
+  background:#202c33;
   color:white;
+  display:flex;
+  flex-direction:column;
 }
-.hidden{display:none}
-.container{
-  max-width:900px;
-  margin:auto;
-  padding:20px;
+.sidebar h2{
+  padding:15px;
+  margin:0;
+  background:#2a3942;
 }
-.card{
-  background:#1e293b;
-  padding:20px;
-  border-radius:12px;
-  margin-bottom:20px;
-}
-input{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-  border:none;
-  border-radius:6px;
-}
-button{
-  width:100%;
-  padding:10px;
-  margin-top:8px;
-  border:none;
-  border-radius:6px;
-  background:#2563eb;
-  color:white;
-  cursor:pointer;
+.users{
+  flex:1;
+  overflow:auto;
 }
 .user{
-  padding:10px;
-  background:#334155;
-  margin:6px 0;
-  border-radius:6px;
+  padding:15px;
+  border-bottom:1px solid #2a3942;
   cursor:pointer;
 }
-#messages{
-  height:250px;
-  overflow:auto;
-  background:#0f172a;
-  padding:10px;
-  border-radius:6px;
-  margin-bottom:10px;
+.user:hover{
+  background:#2a3942;
 }
-.topbar{
+.chat{
+  width:70%;
   display:flex;
-  justify-content:space-between;
+  flex-direction:column;
+  background:#0b141a;
+}
+.chat-header{
+  padding:15px;
+  background:#202c33;
+  color:white;
+}
+.messages{
+  flex:1;
+  padding:20px;
+  overflow:auto;
+}
+.message{
+  max-width:60%;
+  padding:10px 14px;
+  margin-bottom:10px;
+  border-radius:8px;
+  font-size:14px;
+}
+.me{
+  background:#005c4b;
+  color:white;
+  margin-left:auto;
+}
+.other{
+  background:#202c33;
+  color:white;
+}
+.input-area{
+  display:flex;
+  padding:10px;
+  background:#202c33;
+}
+.input-area input{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:20px;
+  outline:none;
+}
+.input-area button{
+  margin-left:10px;
+  padding:10px 15px;
+  border:none;
+  border-radius:50%;
+  background:#00a884;
+  color:white;
+  cursor:pointer;
+}
+.hidden{display:none}
+.auth{
+  display:flex;
+  justify-content:center;
   align-items:center;
-  margin-bottom:15px;
+  height:100vh;
+  background:#111b21;
+}
+.auth-box{
+  background:#202c33;
+  padding:30px;
+  border-radius:10px;
+  width:300px;
+}
+.auth-box input{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+}
+.auth-box button{
+  width:100%;
+  padding:10px;
+  background:#00a884;
+  border:none;
+  color:white;
+  cursor:pointer;
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-
-<!-- AUTH -->
-<div id="authSection" class="card">
-<h2>Login / Signup</h2>
-<input id="email" type="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button onclick="signup()">Signup</button>
-<button onclick="login()">Login</button>
+<!-- LOGIN -->
+<div id="authSection" class="auth">
+  <div class="auth-box">
+    <h3 style="color:white;">Login / Signup</h3>
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="signup()">Signup</button>
+    <button onclick="login()">Login</button>
+  </div>
 </div>
 
-<!-- DASHBOARD -->
-<div id="dashboardSection" class="hidden">
+<!-- APP -->
+<div id="appSection" class="app hidden">
 
-<div class="topbar">
-<div id="welcomeText"></div>
-<button onclick="logout()">Logout</button>
-</div>
+  <div class="sidebar">
+    <h2>Chats</h2>
+    <div class="users" id="usersList"></div>
+  </div>
 
-<div class="card">
-<h3>All Users</h3>
-<div id="usersList"></div>
-</div>
-
-<div class="card hidden" id="chatSection">
-<h3>Private Chat</h3>
-<div id="messages"></div>
-<input id="msgInput" placeholder="Type message">
-<button onclick="sendMessage()">Send</button>
-</div>
+  <div class="chat">
+    <div class="chat-header" id="chatHeader">Select a user</div>
+    <div class="messages" id="messages"></div>
+    <div class="input-area">
+      <input id="msgInput" placeholder="Type a message">
+      <button onclick="sendMessage()">➤</button>
+    </div>
+  </div>
 
 </div>
-</div>
 
-<!-- Firebase Scripts -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
 <script>
-
-
 const firebaseConfig = {
   apiKey: "AIzaSyB3lYDIr8ElAWk-jwnOWxubtVS-TeSSyOg",
   authDomain: "uyguy-ab047.firebaseapp.com",
@@ -116,55 +167,43 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-let currentUser = null;
-let selectedUser = null;
+let currentUser=null;
+let selectedUser=null;
 
 auth.onAuthStateChanged(user=>{
   if(user){
-    currentUser = user;
+    currentUser=user;
     authSection.classList.add("hidden");
-    dashboardSection.classList.remove("hidden");
-    welcomeText.innerText = "Logged in as: " + user.email;
+    appSection.classList.remove("hidden");
     loadUsers();
-  } else {
+  }else{
     authSection.classList.remove("hidden");
-    dashboardSection.classList.add("hidden");
+    appSection.classList.add("hidden");
   }
 });
 
-// Signup
 function signup(){
   auth.createUserWithEmailAndPassword(email.value,password.value)
   .then(userCred=>{
     db.collection("users").doc(userCred.user.uid).set({
-      email:userCred.user.email,
-      createdAt:new Date()
+      email:userCred.user.email
     });
-  })
-  .catch(e=>alert(e.message));
+  }).catch(e=>alert(e.message));
 }
 
-// Login
 function login(){
   auth.signInWithEmailAndPassword(email.value,password.value)
   .catch(e=>alert(e.message));
 }
 
-// Logout
-function logout(){
-  auth.signOut();
-}
-
-// Load Users
 function loadUsers(){
   db.collection("users").onSnapshot(snapshot=>{
     usersList.innerHTML="";
     snapshot.forEach(doc=>{
-      if(doc.id !== currentUser.uid){
+      if(doc.id!==currentUser.uid){
         usersList.innerHTML+=`
           <div class="user" onclick="openChat('${doc.id}','${doc.data().email}')">
             ${doc.data().email}
@@ -175,35 +214,33 @@ function loadUsers(){
   });
 }
 
-// Open Chat
-function openChat(uid){
-  selectedUser = uid;
-  chatSection.classList.remove("hidden");
+function openChat(uid,email){
+  selectedUser=uid;
+  chatHeader.innerText=email;
   loadMessages();
 }
 
-// Load Messages
 function loadMessages(){
   db.collection("messages")
   .orderBy("timestamp")
   .onSnapshot(snapshot=>{
     messages.innerHTML="";
     snapshot.forEach(doc=>{
-      let data = doc.data();
+      let data=doc.data();
       if(
         (data.sender===currentUser.uid && data.receiver===selectedUser) ||
         (data.sender===selectedUser && data.receiver===currentUser.uid)
       ){
-        messages.innerHTML+=`<div>${data.text}</div>`;
+        let cls = data.sender===currentUser.uid ? "me" : "other";
+        messages.innerHTML+=`<div class="message ${cls}">${data.text}</div>`;
       }
     });
-    messages.scrollTop = messages.scrollHeight;
+    messages.scrollTop=messages.scrollHeight;
   });
 }
 
-// Send Message
 function sendMessage(){
-  if(!msgInput.value) return;
+  if(!msgInput.value || !selectedUser) return;
   db.collection("messages").add({
     sender:currentUser.uid,
     receiver:selectedUser,
@@ -212,7 +249,7 @@ function sendMessage(){
   });
   msgInput.value="";
 }
-
 </script>
+
 </body>
 </html>
