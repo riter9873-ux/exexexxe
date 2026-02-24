@@ -6,119 +6,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#0f172a;
-  color:white;
-}
+body{margin:0;font-family:Arial;background:#0f172a;color:white}
 .hidden{display:none}
 
 /* AUTH */
-.auth{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-.auth-box{
-  background:#1e293b;
-  padding:30px;
-  border-radius:10px;
-  width:300px;
-}
-.auth-box input{
-  width:100%;
-  padding:10px;
-  margin:10px 0;
-}
-.auth-box button{
-  width:100%;
-  padding:10px;
-  margin-top:5px;
-  background:#22c55e;
-  border:none;
-  cursor:pointer;
-}
+.auth{display:flex;justify-content:center;align-items:center;height:100vh}
+.auth-box{background:#1e293b;padding:30px;border-radius:10px;width:300px}
+.auth-box input{width:100%;padding:10px;margin:10px 0}
+.auth-box button{width:100%;padding:10px;margin-top:5px;background:#22c55e;border:none;cursor:pointer}
 
 /* APP */
-.app{
-  display:flex;
-  height:100vh;
-}
-.sidebar{
-  width:30%;
-  background:#1e293b;
-  display:flex;
-  flex-direction:column;
-}
-.sidebar-header{
-  padding:15px;
-  background:#111827;
-  display:flex;
-  justify-content:space-between;
-}
-.user{
-  padding:15px;
-  border-bottom:1px solid #334155;
-  cursor:pointer;
-}
-.user:hover{
-  background:#334155;
-}
-.chat-area{
-  width:70%;
-  display:flex;
-  flex-direction:column;
-  background:#0b141a;
-}
-.chat-header{
-  padding:15px;
-  background:#1e293b;
-}
-.messages{
-  flex:1;
-  padding:20px;
-  overflow:auto;
-}
-.message{
-  max-width:60%;
-  padding:10px 14px;
-  margin-bottom:10px;
-  border-radius:8px;
-}
-.me{
-  background:#22c55e;
-  color:black;
-  margin-left:auto;
-}
-.other{
-  background:#334155;
-}
-.input-area{
-  display:flex;
-  padding:10px;
-  background:#1e293b;
-}
-.input-area input{
-  flex:1;
-  padding:10px;
-  border:none;
-  border-radius:20px;
-}
-.input-area button{
-  margin-left:10px;
-  padding:10px 15px;
-  border:none;
-  border-radius:20px;
-  background:#22c55e;
-  cursor:pointer;
-}
+.app{display:flex;height:100vh}
+.sidebar{width:30%;background:#1e293b;padding:10px;display:flex;flex-direction:column}
+.sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.user{padding:10px;border-bottom:1px solid #334155;cursor:pointer}
+.user:hover{background:#334155}
+
+.chat-area{width:70%;display:flex;flex-direction:column;background:#0b141a}
+.chat-header{padding:15px;background:#1e293b}
+.messages{flex:1;padding:20px;overflow:auto}
+.message{max-width:60%;padding:8px 12px;margin:5px 0;border-radius:8px}
+.me{background:#22c55e;color:black;margin-left:auto}
+.other{background:#334155}
+
+.input-area{display:flex;padding:10px;background:#1e293b}
+.input-area input{flex:1;padding:10px;border:none;border-radius:20px}
+.input-area button{margin-left:10px;padding:10px 15px;border:none;border-radius:20px;background:#22c55e;cursor:pointer}
 </style>
 </head>
 <body>
 
-<!-- AUTH SECTION -->
+<!-- AUTH -->
 <div id="authSection" class="auth">
   <div class="auth-box">
     <h3>Login / Signup</h3>
@@ -129,20 +47,20 @@ body{
   </div>
 </div>
 
-<!-- APP SECTION -->
+<!-- APP -->
 <div id="appSection" class="app hidden">
 
   <div class="sidebar">
     <div class="sidebar-header">
-      <span>Chats</span>
+      <span>Users</span>
       <button onclick="logout()">Logout</button>
     </div>
     <div id="userList"></div>
   </div>
 
   <div class="chat-area">
-    <div class="chat-header" id="chatHeader">Select user</div>
-    <div class="messages" id="messages"></div>
+    <div id="chatHeader" class="chat-header">Select user</div>
+    <div id="messages" class="messages"></div>
     <div class="input-area">
       <input id="messageInput" placeholder="Type message">
       <button onclick="sendMessage()">Send</button>
@@ -151,7 +69,7 @@ body{
 
 </div>
 
-<!-- Firebase -->
+<!-- Firebase CDN (COMPAT VERSION) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -161,20 +79,23 @@ const firebaseConfig = {
   apiKey: "AIzaSyB3lYDIr8ElAWk-jwnOWxubtVS-TeSSyOg",
   authDomain: "uyguy-ab047.firebaseapp.com",
   projectId: "uyguy-ab047",
+  storageBucket: "uyguy-ab047.firebasestorage.app",
+  messagingSenderId: "297739792713",
   appId: "1:297739792713:web:72af3ba75fabcacb3caa98"
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-let currentUser=null;
-let selectedUser=null;
+let currentUser = null;
+let selectedUser = null;
 
 /* AUTH STATE */
 auth.onAuthStateChanged(user=>{
   if(user){
-    currentUser=user;
+    currentUser = user;
     document.getElementById("authSection").classList.add("hidden");
     document.getElementById("appSection").classList.remove("hidden");
     loadUsers();
@@ -186,29 +107,18 @@ auth.onAuthStateChanged(user=>{
 
 /* SIGNUP */
 function signup(){
-  const emailVal=email.value.trim();
-  const passVal=password.value.trim();
-  if(!emailVal || !passVal){
-    alert("Enter email & password");
-    return;
-  }
-
-  auth.createUserWithEmailAndPassword(emailVal,passVal)
+  auth.createUserWithEmailAndPassword(email.value,password.value)
   .then(cred=>{
     return db.collection("users").doc(cred.user.uid).set({
       email:cred.user.email
     });
   })
-  .then(()=>alert("Signup successful"))
   .catch(e=>alert(e.message));
 }
 
 /* LOGIN */
 function login(){
-  const emailVal=email.value.trim();
-  const passVal=password.value.trim();
-  auth.signInWithEmailAndPassword(emailVal,passVal)
-  .then(()=>alert("Login successful"))
+  auth.signInWithEmailAndPassword(email.value,password.value)
   .catch(e=>alert(e.message));
 }
 
@@ -254,7 +164,6 @@ function loadMessages(){
       let cls=data.sender===currentUser.uid?"me":"other";
       messages.innerHTML+=`<div class="message ${cls}">${data.text}</div>`;
     });
-    messages.scrollTop=messages.scrollHeight;
   });
 }
 
