@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{margin:0;display:flex;height:100vh;font-family:Inter;background:#f3f4f6}
+.sidebar{width:240px;background:#111827;color:white;padding:20px}
+.sidebar h2{margin-bottom:20px}
+.sidebar a{display:block;padding:10px;color:white;text-decoration:none;border-radius:6px;margin-bottom:8px}
+.sidebar a:hover{background:#2563eb}
+.main{flex:1;padding:40px}
+.topbar{display:flex;justify-content:space-between;margin-bottom:30px}
+.card{background:white;padding:20px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.05);margin-bottom:20px}
+button{padding:6px 12px;border:none;border-radius:6px;background:#2563eb;color:white;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>Cyber Platform</h2>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="users.html">Users</a>
+  <a href="#">Tools</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div id="userEmail">Loading...</div>
+  </div>
+
+  <div class="card">
+    <h3>Welcome</h3>
+    <p>This is your secure platform dashboard.</p>
+  </div>
+
+</div>
+
+<script src="firebase.js"></script>
+<script>
+auth.onAuthStateChanged(user=>{
+  if(!user){window.location="index.html";}
+  else{userEmail.innerText="Logged in as: "+user.email;}
+});
+function logout(){
+  auth.signOut().then(()=>window.location="index.html");
+}
+</script>
+
+</body>
+</html>
