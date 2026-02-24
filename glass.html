@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Glass Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#1e3c72,#2a5298);
+  font-family:sans-serif;
+}
+.card{
+  width:320px;
+  padding:40px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(20px);
+  box-shadow:0 8px 32px rgba(0,0,0,0.3);
+  text-align:center;
+  color:#fff;
+}
+input{
+  width:100%;
+  padding:12px;
+  margin:12px 0;
+  border:none;
+  border-radius:10px;
+  outline:none;
+}
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:30px;
+  background:#fff;
+  color:#2a5298;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+button:hover{
+  transform:scale(1.05);
+}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>Welcome Back</h2>
+<input type="email" placeholder="Email">
+<input type="password" placeholder="Password">
+<button>Login</button>
+<button>Sign Up</button>
+</div>
+</body>
+</html>
